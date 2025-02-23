@@ -39,7 +39,6 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         $credentials = $request->only(['email', 'password']);
-
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json(['message' => 'Unauthorized'], 401);
@@ -90,5 +89,4 @@ class AuthController extends Controller
             return response()->json(['error' => 'Token invalidation failed'], 500);
         }
     }
-
 }
