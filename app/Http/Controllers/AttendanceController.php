@@ -9,18 +9,30 @@ class AttendanceController extends Controller
 {
     public function index()
     {
-        return response()->json(Attendance::all());
+        $attendances = Attendance::with([
+            'student.user',
+            'schedule.classes',
+            'schedule.subject'
+        ])->get();
+        return response()->json([
+            'message' => 'All attendance records found',
+            'data' => $attendances
+        ]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'student_id' => 'required|exists:students,id',
-            'date' => 'required|date',
-            'status' => 'required|in:hadir,izin,sakit,alpha'
+            'schedule_id' => 'required|exists:schedules,id',
+            'status' => 'required|in:Present,Absent,Sick,Permission'
         ]);
 
-        Attendance::create($request->all());
-        return response()->json(['message' => 'Absensi berhasil ditambahkan']);
+        $attendance = Attendance::create($request->all());
+
+        return response()->json([
+            'message' => 'Absensi berhasil ditambahkan',
+            'data' => $attendance
+        ]);
     }
 }

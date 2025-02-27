@@ -9,25 +9,56 @@ class GradeController extends Controller
 {
     public function index()
     {
-        return response()->json(Grade::all());
+        $grades = Grade::with(['student.user', 'subject', 'teacher.user'])->get();
+
+        if ($grades->isEmpty()) {
+            return response()->json(['message' => 'Tidak ada data nilai ditemukan'], 404);
+        }
+
+        return response()->json([
+            'message' => 'Semua data nilai ditemukan',
+            'data' => $grades
+        ]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'subject_id' => 'required|exists:subjects,id',
-            'score' => 'required|integer|min:0|max:100'
+            'remark' => 'required|string',
+            'score' => 'required|integer|min:0|max:100',
+            'studentId' => 'required|exists:students,id',
+            'subjectId' => 'required|exists:subjects,id',
+            'teacherId' => 'required|exists:teachers,id'
         ]);
 
-        Grade::create($request->all());
+        Grade::create([
+            'remark' => $request->remark,
+            'score' => $request->score,
+            'student_id' => $request->studentId,
+            'subject_id' => $request->subjectId,
+            'teacher_id' => $request->teacherId,
+        ]);
         return response()->json(['message' => 'Nilai berhasil ditambahkan']);
     }
 
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'remark' => 'required|string',
+            'score' => 'required|integer|min:0|max:100',
+            'studentId' => 'required|exists:students,id',
+            'subjectId' => 'required|exists:subjects,id',
+            'teacherId' => 'required|exists:teachers,id'
+        ]);
+
         $grade = Grade::findOrFail($id);
-        $grade->update($request->all());
+        $grade->update([
+            'remark' => $request->remark,
+            'score' => $request->score,
+            'student_id' => $request->studentId,
+            'subject_id' => $request->subjectId,
+            'teacher_id' => $request->teacherId,
+        ]);
         return response()->json(['message' => 'Nilai berhasil diperbarui']);
     }
 

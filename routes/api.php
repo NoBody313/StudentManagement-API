@@ -8,6 +8,7 @@ use App\Http\Controllers\GradeController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TeacherController;
 use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,19 +30,20 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::middleware(JwtMiddleware::class)->group(function () {
     Route::get('/user', [AuthController::class, 'getUser']);
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::apiResource('students', StudentController::class);
 
     // 🔹 ADMIN
     Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/admin/students', [AdminController::class, 'indexStudents']);
         Route::get('/admin/teachers', [AdminController::class, 'indexTeachers']);
+        Route::apiResource('students', StudentController::class);
         Route::apiResource('classes', ClassController::class);
         Route::apiResource('subjects', SubjectController::class);
         Route::apiResource('schedules', ScheduleController::class);
+        Route::apiResource('teachers', TeacherController::class);
     });
 
     // 🔹 GURU (Nilai & Absensi)
-    Route::middleware(['auth', 'role:teacher'])->group(function () {
+    Route::middleware(['auth', 'role:admin,teacher'])->group(function () {
         Route::apiResource('grades', GradeController::class);
         Route::apiResource('attendance', AttendanceController::class);
     });

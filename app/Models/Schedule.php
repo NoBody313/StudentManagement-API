@@ -12,15 +12,18 @@ class Schedule extends Model
 
     protected $fillable = ['class_id', 'teacher_id', 'subject_id', 'day', 'start_time', 'end_time'];
 
-    public function class(): BelongsTo {
-        return $this->belongsTo(Classes::class);
+    public function classes()
+    {
+        return $this->belongsTo(Classes::class, 'class_id');
     }
 
-    public function teacher(): BelongsTo {
+    public function teacher(): BelongsTo
+    {
         return $this->belongsTo(Teacher::class);
     }
 
-    public function subject(): BelongsTo {
+    public function subject(): BelongsTo
+    {
         return $this->belongsTo(Subject::class);
     }
 }
