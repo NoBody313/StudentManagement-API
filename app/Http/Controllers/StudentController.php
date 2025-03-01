@@ -110,31 +110,30 @@ class StudentController extends Controller
     public function show($id): JsonResponse
     {
         try {
-            $student = Student::with(['father', 'mother', 'user', 'classes'])->find($id);
+            $student = Student::with(['user', 'classes'])->find($id);
 
             if (!$student) {
                 return response()->json(['message' => 'Student not found'], 404);
             }
 
-            return response()->json([
+            $responseData = [
                 'message' => 'Student found',
                 'id' => $student->id,
                 'user_id' => $student->user_id,
-                'user' => $student->user,
                 'nis' => $student->nis,
                 'nisn' => $student->nisn,
                 'date_of_birth' => $student->date_of_birth,
                 'place_of_birth' => $student->place_of_birth,
                 'class_id' => $student->class_id,
                 'gender' => $student->gender,
-                'father_id' => $student->father->id,
-                'mother_id' => $student->mother->id,
                 'created_at' => $student->created_at,
                 'updated_at' => $student->updated_at,
-                'user' => $student->user,
-                'father' => $student->father,
-                'mother' => $student->mother,
-            ]);
+            ];
+
+            $responseData['user'] = $student->user;
+            $responseData['classes'] = $student->classes;
+
+            return response()->json($responseData);
         } catch (Exception $e) {
             return response()->json(['message' => 'Error fetching student', 'error' => $e->getMessage()], 500);
         }

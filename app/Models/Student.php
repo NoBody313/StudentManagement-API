@@ -18,8 +18,6 @@ class Student extends Model
         'date_of_birth',
         'place_of_birth',
         'gender',
-        // 'father_id',
-        // 'mother_id',
     ];
 
     public function father()
