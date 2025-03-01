@@ -195,17 +195,15 @@ namespace App\Models{
  * @property string $date_of_birth
  * @property string $place_of_birth
  * @property string $gender
- * @property int $father_id
- * @property int $mother_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attendance> $attendance
  * @property-read int|null $attendance_count
  * @property-read \App\Models\Classes $classes
- * @property-read \App\Models\Father $father
+ * @property-read \App\Models\Father|null $father
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Grade> $grades
  * @property-read int|null $grades_count
- * @property-read \App\Models\Mother $mother
+ * @property-read \App\Models\Mother|null $mother
  * @property-read \App\Models\User $user
  * @method static \Database\Factories\StudentFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Student newModelQuery()
@@ -214,10 +212,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Student whereClassId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Student whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Student whereDateOfBirth($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Student whereFatherId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Student whereGender($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Student whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Student whereMotherId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Student whereNis($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Student whereNisn($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Student wherePlaceOfBirth($value)

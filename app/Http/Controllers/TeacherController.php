@@ -40,6 +40,7 @@ class TeacherController extends Controller
             'name' => $request->user['name'],
             'email' => $request->user['email'],
             'password' => bcrypt($request->user['password']),
+            'role' => 'guru',
         ]);
 
         $teacher = Teacher::create([

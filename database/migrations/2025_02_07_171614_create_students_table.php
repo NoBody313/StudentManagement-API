@@ -20,8 +20,6 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->string('place_of_birth');
             $table->string('gender');
-            $table->foreignId('father_id')->constrained('fathers')->onDelete('cascade');
-            $table->foreignId('mother_id')->constrained('mothers')->onDelete('cascade');
             $table->timestamps();
         });
     }

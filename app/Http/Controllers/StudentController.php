@@ -24,7 +24,7 @@ class StudentController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $students = Student::with(['father', 'mother', 'classes', 'user'])->get();
+            $students = Student::with(['classes', 'user'])->get();
             return response()->json([
                 'message' => 'All students found',
                 'data' => $students
@@ -37,92 +37,69 @@ class StudentController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'name' => 'required|string',
+            'user.name' => 'required|string',
             'user.email' => 'required|email',
-            'user.password' => 'required',
+            'user.password' => 'required|string',
             'nis' => 'required|string',
             'nisn' => 'required|string',
             'class_id' => 'nullable|exists:classes,id',
             'date_of_birth' => 'required|date',
-            'gender' => 'required',
-            'father.name' => 'required|string',
-            'father.phone_number' => 'required|string',
-            'father.born_place' => 'required|string',
-            'father.born_date' => 'required|date',
-            'father.occupation' => 'required|string',
-            'father.address' => 'required|string',
-            'mother.name' => 'required|string',
-            'mother.phone_number' => 'required|string',
-            'mother.born_place' => 'required|string',
-            'mother.born_date' => 'required|date',
-            'mother.occupation' => 'required|string',
-            'mother.address' => 'required|string',
+            'place_of_birth' => 'required|string',
+            'gender' => 'required|string',
         ]);
 
         try {
             DB::beginTransaction();
 
             $user = User::create([
-                'name' => $request->name,
-                'email' => $request->input('user.email'),
-                'password' => Hash::make($request->input('user.password')),
-                'role' => 'siswa'
+                'name' => $request->user['name'],
+                'email' => $request->user['email'],
+                'password' => Hash::make($request->user['password']),
+                'role' => 'siswa',
             ]);
-
-            $father = Father::create($request->input('father'));
-            $mother = Mother::create($request->input('mother'));
 
             $student = Student::create([
                 'user_id' => $user->id,
                 'nis' => $request->nis,
                 'nisn' => $request->nisn,
-                'class_id' => $request->input('classId'),
+                'class_id' => $request->class_id,
                 'date_of_birth' => $request->date_of_birth,
-                'place_of_birth' => $request->input('placeOfBirth'),
+                'place_of_birth' => $request->place_of_birth,
                 'gender' => $request->gender,
-                'father_id' => $father->id,
-                'mother_id' => $mother->id,
             ]);
 
             DB::commit();
-
             return response()->json([
-                'message' => 'Student, User, and Parents created successfully',
-                'user' => $user,
+                'message' => 'Student and User created successfully',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->updated_at,
+                ],
                 'student' => [
                     'id' => $student->id,
                     'user_id' => $student->user_id,
-                    'user' => $user,
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'role' => $user->role,
+                        'created_at' => $user->created_at,
+                        'updated_at' => $user->updated_at,
+                    ],
                     'nis' => $student->nis,
                     'nisn' => $student->nisn,
                     'date_of_birth' => $student->date_of_birth,
                     'place_of_birth' => $student->place_of_birth,
                     'class_id' => $student->class_id,
-                    'class' => $student->class,
+                    'class' => $student->class,  // Pastikan class data di-include sesuai dengan DTO
                     'gender' => $student->gender,
-                    'father_id' => [
-                        'id' => $father->id,
-                        'name' => $father->name,
-                        'phone_number' => $father->phone_number,
-                        'born_place' => $father->born_place,
-                        'born_date' => $father->born_date,
-                        'occupation' => $father->occupation,
-                        'address' => $father->address,
-                    ],
-                    'mother_id' => [
-                        'id' => $mother->id,
-                        'name' => $mother->name,
-                        'phone_number' => $mother->phone_number,
-                        'born_place' => $mother->born_place,
-                        'born_date' => $mother->born_date,
-                        'occupation' => $mother->occupation,
-                        'address' => $mother->address,
-                    ],
                     'created_at' => $student->created_at,
                     'updated_at' => $student->updated_at,
-                ],
-                'father' => $father,
-                'mother' => $mother,
+                ]
             ], 201);
         } catch (Exception $e) {
             DB::rollBack();
@@ -238,18 +215,57 @@ class StudentController extends Controller
     public function showSchedule()
     {
         $student = Auth::user()->student;
-        return response()->json(Schedule::where('class_id', $student->class_id)->get());
+
+        if (!$student) {
+            return response()->json(['error' => 'Student not found'], 404);
+        }
+
+        $schedules = Schedule::with(['classes', 'teacher.user', 'subject'])
+            ->where('class_id', $student->class_id)
+            ->get();
+
+        return response()->json([
+            'schedules' => $schedules
+        ]);
     }
+
 
     public function showGrades()
     {
         $student = Auth::user()->student;
-        return response()->json(Grade::where('student_id', $student->id)->get());
+        if (!$student) {
+            return response()->json(['error' => 'Student not found'], 404);
+        }
+
+        $grades = Grade::with(['student.user', 'subject', 'teacher.user'])
+            ->where('student_id', $student->id)
+            ->get();
+
+        return response()->json([
+            'grades' => $grades
+        ]);
     }
 
     public function showAttendance()
     {
         $student = Auth::user()->student;
-        return response()->json(Attendance::where('student_id', $student->id)->get());
+        if (!$student) {
+            return response()->json(['error' => 'Student not found'], 404);
+        }
+
+        $attendances = Attendance::with([
+            'student',
+            'student.user',
+            'schedule.classes',
+            'schedule.teacher',
+            'schedule.teacher.user',
+            'schedule.subject'
+        ])
+            ->where('student_id', $student->id)
+            ->get();
+
+        return response()->json([
+            'attendances' => $attendances
+        ]);
     }
 }

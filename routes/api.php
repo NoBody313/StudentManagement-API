@@ -32,7 +32,7 @@ Route::middleware(JwtMiddleware::class)->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // 🔹 ADMIN
-    Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
         Route::get('/admin/students', [AdminController::class, 'indexStudents']);
         Route::get('/admin/teachers', [AdminController::class, 'indexTeachers']);
         Route::apiResource('students', StudentController::class);
@@ -43,12 +43,12 @@ Route::middleware(JwtMiddleware::class)->group(function () {
     });
 
     // 🔹 GURU (Nilai & Absensi)
-    Route::middleware(['auth', 'role:admin,teacher'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
         Route::apiResource('grades', GradeController::class);
         Route::apiResource('attendance', AttendanceController::class);
     });
     // 🔹 SISWA (Lihat Data Sendiri)
-    Route::prefix('student')->middleware(['auth', 'role:student'])->group(function () {
+    Route::prefix('student')->middleware(['auth'])->group(function () {
         Route::get('/schedule', [StudentController::class, 'showSchedule']);
         Route::get('/grades', [StudentController::class, 'showGrades']);
         Route::get('/attendance', [StudentController::class, 'showAttendance']);
