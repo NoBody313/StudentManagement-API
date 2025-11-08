@@ -27,30 +27,30 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::middleware(JwtMiddleware::class)->group(function () {
-    Route::get('/user', [AuthController::class, 'getUser']);
-    Route::post('/logout', [AuthController::class, 'logout']);
+// Route::middleware(JwtMiddleware::class)->group(function () {
+Route::get('/user', [AuthController::class, 'getUser']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
-    // 🔹 ADMIN
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/admin/students', [AdminController::class, 'indexStudents']);
-        Route::get('/admin/teachers', [AdminController::class, 'indexTeachers']);
-        Route::apiResource('students', StudentController::class);
-        Route::apiResource('classes', ClassController::class);
-        Route::apiResource('subjects', SubjectController::class);
-        Route::apiResource('schedules', ScheduleController::class);
-        Route::apiResource('teachers', TeacherController::class);
-    });
+// 🔹 ADMIN
+// Route::middleware(['auth'])->group(function () {
+Route::get('/admin/students', [AdminController::class, 'indexStudents']);
+Route::get('/admin/teachers', [AdminController::class, 'indexTeachers']);
+Route::apiResource('students', StudentController::class);
+Route::apiResource('classes', ClassController::class);
+Route::apiResource('subjects', SubjectController::class);
+Route::apiResource('schedules', ScheduleController::class);
+Route::apiResource('teachers', TeacherController::class);
+// });
 
-    // 🔹 GURU (Nilai & Absensi)
-    Route::middleware(['auth'])->group(function () {
-        Route::apiResource('grades', GradeController::class);
-        Route::apiResource('attendance', AttendanceController::class);
-    });
-    // 🔹 SISWA (Lihat Data Sendiri)
-    Route::prefix('student')->middleware(['auth'])->group(function () {
-        Route::get('/schedule', [StudentController::class, 'showSchedule']);
-        Route::get('/grades', [StudentController::class, 'showGrades']);
-        Route::get('/attendance', [StudentController::class, 'showAttendance']);
-    });
+// 🔹 GURU (Nilai & Absensi)
+// Route::middleware(['auth'])->group(function () {
+Route::apiResource('grades', GradeController::class);
+Route::apiResource('attendance', AttendanceController::class);
+// });
+// 🔹 SISWA (Lihat Data Sendiri)
+Route::prefix('student')->group(function () {
+    Route::get('/schedule', [StudentController::class, 'showSchedule']);
+    Route::get('/grades', [StudentController::class, 'showGrades']);
+    Route::get('/attendance', [StudentController::class, 'showAttendance']);
 });
+// });
