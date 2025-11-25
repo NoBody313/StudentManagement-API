@@ -10,20 +10,20 @@ class Schedule extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['class_id', 'teacher_id', 'subject_id', 'day', 'start_time', 'end_time'];
+    protected $fillable = ['day', 'start_time', 'end_time'];
 
-    public function classes()
-    {
-        return $this->belongsTo(Classes::class, 'class_id');
-    }
+    // public function classes()
+    // {
+    //     return $this->belongsTo(Classes::class, 'class_id');
+    // }
 
-    public function teacher(): BelongsTo
-    {
-        return $this->belongsTo(Teacher::class);
-    }
+    // public function teacher(): BelongsTo
+    // {
+    //     return $this->belongsTo(Teacher::class);
+    // }
 
-    public function subject(): BelongsTo
-    {
-        return $this->belongsTo(Subject::class);
-    }
+    // public function subject(): BelongsTo
+    // {
+    //     return $this->belongsTo(Subject::class);
+    // }
 }

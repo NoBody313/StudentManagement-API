@@ -13,11 +13,11 @@ class Subject extends Model
 
     protected $fillable = ['name'];
 
-    public function teachers(): BelongsToMany {
-        return $this->belongsToMany(Teacher::class, 'teacher_subject');
-    }
+    // public function teachers(): BelongsToMany {
+    //     return $this->belongsToMany(Teacher::class, 'teacher_subject');
+    // }
 
-    public function grades(): HasMany {
-        return $this->hasMany(Grade::class);
-    }
+    // public function grades(): HasMany {
+    //     return $this->hasMany(Grade::class);
+    // }
 }

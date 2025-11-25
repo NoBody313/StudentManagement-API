@@ -14,7 +14,7 @@ class ScheduleController extends Controller
 {
     public function index()
     {
-        $schedule = Schedule::with(['classes', 'teacher.user', 'subject'])->get();
+        $schedule = Schedule::get();
         return response()->json([
             'message' => 'All schedule found',
             'schedule' => $schedule
@@ -23,7 +23,7 @@ class ScheduleController extends Controller
 
     public function show($id): JsonResponse
     {
-        $schedule = Schedule::with(['classes', 'teacher.user', 'subject'])->find($id);
+        $schedule = Schedule::find($id);
         if (!$schedule) {
             return response()->json(['message' => 'Jadwal tidak ditemukan'], 404);
         }
@@ -33,9 +33,6 @@ class ScheduleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'class_id' => 'required|exists:classes,id',
-            'subject_id' => 'required|exists:subjects,id',
-            'teacher_id' => 'required|exists:teachers,id',
             'day' => 'required',
             'start_time' => 'required',
             'end_time' => 'required'
@@ -52,14 +49,6 @@ class ScheduleController extends Controller
     public function update(Request $request, $id)
     {
         $schedule = Schedule::findOrFail($id);
-
-        $class = Classes::find($request->input('class_id'));
-        $teacher = Teacher::find($request->input('teacher_id'));
-        $subject = Subject::find($request->input('subject_id'));
-
-        if (!$class || !$teacher || !$subject) {
-            return response()->json(['message' => 'Invalid class, teacher, or subject ID'], 400);
-        }
 
         $schedule->update($request->all());
         return response()->json(['message' => 'Jadwal berhasil diperbarui']);
