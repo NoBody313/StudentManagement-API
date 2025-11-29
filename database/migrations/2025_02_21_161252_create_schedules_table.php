@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->enum('day', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->string('name');
+            $table->string('mentor');
+            $table->string('date');
+            $table->string('time');
             $table->timestamps();
         });
     }

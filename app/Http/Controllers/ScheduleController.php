@@ -32,11 +32,11 @@ class ScheduleController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'day' => 'required',
-            'start_time' => 'required',
-            'end_time' => 'required'
-        ]);
+        // $request->validate([
+        //     'day' => 'required',
+        //     'start_time' => 'required',
+        //     'end_time' => 'required'
+        // ]);
 
         $schedule = Schedule::create($request->all());
 
@@ -48,9 +48,11 @@ class ScheduleController extends Controller
 
     public function update(Request $request, $id)
     {
-        $schedule = Schedule::findOrFail($id);
-
-        $schedule->update($request->all());
+        try {
+            $schedule = Schedule::findOrFail($id);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['message' => 'Jadwal tidak ditemukan'], 404);
+        }
         return response()->json(['message' => 'Jadwal berhasil diperbarui']);
     }
 
